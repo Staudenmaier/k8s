@@ -1,0 +1,4 @@
+docker_ui_namespace: do
+docker_ui_name: docker-ui
+stage: int
+node_selector: "beta.kubernetes.io/os: linux"

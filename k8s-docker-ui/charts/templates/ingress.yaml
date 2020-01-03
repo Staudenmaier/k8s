@@ -1,0 +1,27 @@
+{{- $fullName := include "k8s-docker-ui.fullname" . -}}
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+
+metadata:
+  namespace: {{ .Values.docker_ui_namespace }}
+  name:      {{ $fullName }}
+  labels:
+    app: {{ template "k8s-docker-ui.name" . }}
+    chart: {{ template "k8s-docker-ui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+
+  annotations:
+    kubernetes.io/ingress.class: traefik
+
+spec:
+  entryPoints: []
+  routes:
+  - kind: Rule
+    match: Host(`registry-ui.{{ .Values.stage }}-group.com`) && PathPrefix(`/`)
+    middlewares: []
+    priority: 0
+    services:
+    - name: {{ template "k8s-docker-ui.name" . }}
+      port: 80

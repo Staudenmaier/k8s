@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.docker_ui_namespace }}
+  name:      {{ .Release.Name }}
+  labels:
+    app: {{ template "k8s-docker-ui.name" . }}
+    chart: {{ template "k8s-docker-ui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "k8s-docker-ui.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app:  {{ template "k8s-docker-ui.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      nodeSelector: 
+        beta.kubernetes.io/os: linux    
+      containers:
+      - name:  {{ .Chart.Name }}
+        image: joxit/docker-registry-ui:static
+        ports:
+        - name:          http
+          protocol:      TCP
+          containerPort: 80
+        env:
+        - name:  REGISTRY_URL
+          value: "http://registry.do/v2"
+        - name: DELETE_IMAGES
+          value: "true"
+        - name: REGISTRY_TITLE
+          value: "Docker registry for stage" 
